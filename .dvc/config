@@ -1,4 +1,0 @@
-[core]
-    remote = gcsremote
-['remote "gcsremote"']
-    url = gs://ga-1-mlops-22f3001954/dvcstore
