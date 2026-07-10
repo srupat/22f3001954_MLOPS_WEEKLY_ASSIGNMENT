@@ -1,0 +1,81 @@
+name: Week 4 CI - IRIS Pipeline
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+  id-token: write
+
+jobs:
+  test-iris-pipeline:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud using Workload Identity Federation
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install "dvc[gs]" pytest
+
+      - name: Verify GCS access
+        run: |
+          gcloud storage ls gs://ga-1-mlops-22f3001954
+
+      - name: Pull DVC data and model artifacts
+        run: |
+          dvc remote list
+          dvc pull
+
+      - name: Run pytest suite
+        run: |
+          mkdir -p reports
+          pytest tests -v | tee reports/pytest_report.txt
+
+      - name: Create CML report
+        if: always()
+        run: |
+          echo "## Week 4 CI Report" > reports/cml_report.md
+          echo "" >> reports/cml_report.md
+
+          echo "### Pytest Output" >> reports/cml_report.md
+          echo '```text' >> reports/cml_report.md
+          cat reports/pytest_report.txt >> reports/cml_report.md || true
+          echo '```' >> reports/cml_report.md
+
+          echo "" >> reports/cml_report.md
+          echo "### Evaluation Metrics" >> reports/cml_report.md
+          if [ -f reports/metrics.json ]; then
+            echo '```json' >> reports/cml_report.md
+            cat reports/metrics.json >> reports/cml_report.md
+            echo '```' >> reports/cml_report.md
+          else
+            echo "No metrics.json generated." >> reports/cml_report.md
+          fi
+
+      - name: Set up CML
+        if: always() && github.event_name == 'pull_request'
+        uses: iterative/setup-cml@v2
+
+      - name: Comment CML report on PR
+        if: always() && github.event_name == 'pull_request'
+        env:
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cml comment create reports/cml_report.md
