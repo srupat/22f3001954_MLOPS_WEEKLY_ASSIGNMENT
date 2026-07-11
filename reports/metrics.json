@@ -1,0 +1,7 @@
+{
+    "accuracy": 1.0,
+    "precision_macro": 1.0,
+    "min_accuracy_required": 0.8,
+    "min_precision_required": 0.8,
+    "num_eval_rows": 30
+}
