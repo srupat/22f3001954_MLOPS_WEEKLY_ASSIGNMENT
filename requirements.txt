@@ -3,3 +3,5 @@ scikit-learn
 joblib
 dvc[gs]
 google-cloud-storage
+pytest
+pytest-html
