@@ -5,3 +5,4 @@ dvc[gs]
 google-cloud-storage
 pytest
 pytest-html
+mlflow
