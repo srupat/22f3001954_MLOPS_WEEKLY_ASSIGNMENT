@@ -1,4 +1,15 @@
 .env
+venv/
+__pycache__/
+.pytest_cache/
+
+# DVC-tracked data
 /data
-/models
-/outputs
+
+# Local MLflow tracking store and artifacts
+mlruns/
+mlflow.db
+
+# Generated outputs
+outputs/
+models/

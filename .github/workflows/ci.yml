@@ -1,4 +1,4 @@
-name: Week 4 CI - IRIS Pipeline
+name: Week 5 CI - IRIS MLflow Pipeline
 
 on:
   push:
@@ -10,7 +10,7 @@ permissions:
   id-token: write
 
 jobs:
-  test-iris-pipeline:
+  test-mlflow-pipeline:
     runs-on: ubuntu-latest
 
     steps:
@@ -32,26 +32,31 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install "dvc[gs]" pytest
+          pip install "dvc[gs]" mlflow pytest
 
-      - name: Verify GCS access
-        run: |
-          gcloud storage ls gs://ga-1-mlops-22f3001954
-
-      - name: Pull DVC data and model artifacts
+      - name: Pull DVC data only
         run: |
           dvc remote list
-          dvc pull
+          dvc pull data.dvc
+
+      - name: Train and register model with MLflow
+        run: |
+          python src/mlflow_train.py
+
+      - name: Evaluate registered MLflow model
+        run: |
+          python src/mlflow_evaluate.py
 
       - name: Run pytest suite
         run: |
+          set -o pipefail
           mkdir -p reports
           pytest tests -v | tee reports/pytest_report.txt
 
       - name: Create CML report
         if: always()
         run: |
-          echo "## Week 4 CI Report" > reports/cml_report.md
+          echo "## Week 5 MLflow CI Report" > reports/cml_report.md
           echo "" >> reports/cml_report.md
 
           echo "### Pytest Output" >> reports/cml_report.md
@@ -60,13 +65,13 @@ jobs:
           echo '```' >> reports/cml_report.md
 
           echo "" >> reports/cml_report.md
-          echo "### Evaluation Metrics" >> reports/cml_report.md
-          if [ -f reports/metrics.json ]; then
+          echo "### MLflow Evaluation Metrics" >> reports/cml_report.md
+          if [ -f outputs/mlflow_eval_metrics.json ]; then
             echo '```json' >> reports/cml_report.md
-            cat reports/metrics.json >> reports/cml_report.md
+            cat outputs/mlflow_eval_metrics.json >> reports/cml_report.md
             echo '```' >> reports/cml_report.md
           else
-            echo "No metrics.json generated." >> reports/cml_report.md
+            echo "No MLflow evaluation metrics generated." >> reports/cml_report.md
           fi
 
       - name: Set up CML
