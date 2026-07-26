@@ -13,3 +13,11 @@ mlflow.db
 # Generated outputs
 outputs/
 models/
+
+# Google GitHub Actions generated credentials
+gha-creds-*.json
+
+# Local Docker/MLflow generated files
+api/model.joblib
+mlruns/
+mlflow.db
