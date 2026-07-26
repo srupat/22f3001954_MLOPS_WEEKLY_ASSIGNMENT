@@ -1,0 +1,133 @@
+name: Week 6 CD - Build and Deploy IRIS API
+
+on:
+  push:
+    branches:
+      - week_6
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  PROJECT_ID: mlops-499806
+  REGION: us-central1
+  ZONE: us-central1-a
+  AR_REPO: iris-mlops-repo
+  IMAGE_NAME: iris-api
+  CLUSTER_NAME: iris-gke-cluster
+  DEPLOYMENT_NAME: iris-api
+  IMAGE_URI: us-central1-docker.pkg.dev/mlops-499806/iris-mlops-repo/iris-api:${{ github.sha }}
+
+jobs:
+  build-push-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud using Workload Identity Federation
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v3
+
+      - name: Set up GKE credentials
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: ${{ env.CLUSTER_NAME }}
+          location: ${{ env.ZONE }}
+          project_id: ${{ env.PROJECT_ID }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install "dvc[gs]" mlflow scikit-learn joblib pandas
+
+      - name: Pull DVC data
+        run: |
+          dvc pull data.dvc
+
+      - name: Train and register MLflow champion model
+        run: |
+          python src/mlflow_train.py
+
+      - name: Export MLflow champion model for Docker image
+        run: |
+          python src/export_mlflow_model.py
+          ls -lh api/model.joblib
+
+      - name: Configure Docker for Artifact Registry
+        run: |
+          gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
+
+      - name: Build and push Docker image to Artifact Registry
+        run: |
+          docker buildx build \
+          --platform linux/amd64 \
+          -t ${{ env.IMAGE_URI }} \
+          --push .
+    
+      - name: Update Kubernetes deployment image
+        run: |
+          kubectl set image deployment/${{ env.DEPLOYMENT_NAME }} \
+            iris-api=${{ env.IMAGE_URI }} \
+            --namespace=default || true
+
+      - name: Apply Kubernetes manifests
+        run: |
+          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml
+
+      - name: Force deployment to use current image
+        run: |
+          kubectl set image deployment/${{ env.DEPLOYMENT_NAME }} \
+            iris-api=${{ env.IMAGE_URI }} \
+            --namespace=default
+
+      - name: Wait for deployment rollout
+        run: |
+          kubectl rollout status deployment/${{ env.DEPLOYMENT_NAME }} --timeout=300s
+
+      - name: Show Kubernetes resources
+        run: |
+          kubectl get deployments
+          kubectl get pods
+          kubectl get service iris-api-service
+
+      - name: Smoke test deployed API
+        run: |
+          echo "Waiting for external IP..."
+          for i in {1..30}; do
+            EXTERNAL_IP=$(kubectl get service iris-api-service -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+            if [ -n "$EXTERNAL_IP" ]; then
+              echo "External IP: $EXTERNAL_IP"
+              break
+            fi
+            echo "External IP not ready yet. Sleeping..."
+            sleep 10
+          done
+
+          if [ -z "$EXTERNAL_IP" ]; then
+            echo "External IP was not assigned."
+            exit 1
+          fi
+
+          echo "Testing health endpoint"
+          curl -f "http://${EXTERNAL_IP}/health"
+
+          echo "Testing prediction endpoint"
+          curl -f -X POST "http://${EXTERNAL_IP}/predict" \
+            -H "Content-Type: application/json" \
+            -d '{"sepal_length": 5.1, "sepal_width": 3.5, "petal_length": 1.4, "petal_width": 0.2}'
