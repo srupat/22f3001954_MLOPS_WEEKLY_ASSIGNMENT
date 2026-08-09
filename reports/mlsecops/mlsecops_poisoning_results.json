@@ -1,0 +1,38 @@
+[
+    {
+        "poisoning_percent": 0,
+        "poisoning_level": 0.0,
+        "num_poisoned_rows": 0,
+        "accuracy": 0.9333333333333333,
+        "precision_macro": 0.9333333333333332,
+        "recall_macro": 0.9333333333333332,
+        "f1_macro": 0.9333333333333332
+    },
+    {
+        "poisoning_percent": 5,
+        "poisoning_level": 0.05,
+        "num_poisoned_rows": 6,
+        "accuracy": 0.9666666666666667,
+        "precision_macro": 0.9696969696969697,
+        "recall_macro": 0.9666666666666667,
+        "f1_macro": 0.9665831244778612
+    },
+    {
+        "poisoning_percent": 10,
+        "poisoning_level": 0.1,
+        "num_poisoned_rows": 12,
+        "accuracy": 0.9333333333333333,
+        "precision_macro": 0.9333333333333332,
+        "recall_macro": 0.9333333333333332,
+        "f1_macro": 0.9333333333333332
+    },
+    {
+        "poisoning_percent": 50,
+        "poisoning_level": 0.5,
+        "num_poisoned_rows": 60,
+        "accuracy": 0.9333333333333333,
+        "precision_macro": 0.9333333333333332,
+        "recall_macro": 0.9333333333333332,
+        "f1_macro": 0.9333333333333332
+    }
+]
