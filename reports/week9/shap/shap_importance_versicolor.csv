@@ -1,0 +1,5 @@
+feature,mean_absolute_shap,class_name
+petal_length,0.20881594583383353,versicolor
+petal_width,0.17529106281566012,versicolor
+sepal_length,0.04993895067426172,versicolor
+sepal_width,0.00799181702920524,versicolor
