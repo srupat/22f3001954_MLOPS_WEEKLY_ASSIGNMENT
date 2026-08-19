@@ -1,0 +1,68 @@
+{
+    "setosa": [
+        {
+            "feature": "petal_length",
+            "mean_absolute_shap": 0.21488263471833802,
+            "class_name": "setosa"
+        },
+        {
+            "feature": "petal_width",
+            "mean_absolute_shap": 0.17458670923560582,
+            "class_name": "setosa"
+        },
+        {
+            "feature": "sepal_length",
+            "mean_absolute_shap": 0.06157412840713435,
+            "class_name": "setosa"
+        },
+        {
+            "feature": "sepal_width",
+            "mean_absolute_shap": 0.008099448982682295,
+            "class_name": "setosa"
+        }
+    ],
+    "versicolor": [
+        {
+            "feature": "petal_length",
+            "mean_absolute_shap": 0.20881594583383353,
+            "class_name": "versicolor"
+        },
+        {
+            "feature": "petal_width",
+            "mean_absolute_shap": 0.17529106281566012,
+            "class_name": "versicolor"
+        },
+        {
+            "feature": "sepal_length",
+            "mean_absolute_shap": 0.04993895067426172,
+            "class_name": "versicolor"
+        },
+        {
+            "feature": "sepal_width",
+            "mean_absolute_shap": 0.00799181702920524,
+            "class_name": "versicolor"
+        }
+    ],
+    "virginica": [
+        {
+            "feature": "petal_length",
+            "mean_absolute_shap": 0.21228078542647852,
+            "class_name": "virginica"
+        },
+        {
+            "feature": "petal_width",
+            "mean_absolute_shap": 0.17486391859496173,
+            "class_name": "virginica"
+        },
+        {
+            "feature": "sepal_length",
+            "mean_absolute_shap": 0.039665417899547174,
+            "class_name": "virginica"
+        },
+        {
+            "feature": "sepal_width",
+            "mean_absolute_shap": 0.003878071365890382,
+            "class_name": "virginica"
+        }
+    ]
+}

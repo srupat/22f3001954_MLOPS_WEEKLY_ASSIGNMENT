@@ -1,0 +1,5 @@
+feature,mean_absolute_shap,class_name
+petal_length,0.21488263471833802,setosa
+petal_width,0.17458670923560582,setosa
+sepal_length,0.06157412840713435,setosa
+sepal_width,0.008099448982682295,setosa

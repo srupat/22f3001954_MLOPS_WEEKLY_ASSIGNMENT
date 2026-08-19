@@ -1,0 +1,20 @@
+{
+    "overall": {
+        "accuracy": 0.9333333333333333,
+        "precision_macro": 0.9333333333333332,
+        "recall_macro": 0.9333333333333332,
+        "f1_macro": 0.9333333333333332
+    },
+    "difference_between_groups": {
+        "accuracy": 0.15384615384615385,
+        "precision_macro": 0.12222222222222212,
+        "recall_macro": 0.12222222222222212,
+        "f1_macro": 0.12222222222222212
+    },
+    "ratio_between_groups": {
+        "accuracy": 0.8461538461538461,
+        "precision_macro": 0.8777777777777779,
+        "recall_macro": 0.8777777777777779,
+        "f1_macro": 0.8777777777777779
+    }
+}
