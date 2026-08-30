@@ -1,3 +1,1 @@
-- `api/main.py` contains code for the FastAPI api
-- `.github/workflows/cd.yml` contains the github actions workflow pipeline commands
-- `k8s` folder contains yaml configurations for Deployment and Service using LoadBalancer
+check out reports folder for all the required reports and plots and src folder for the script
