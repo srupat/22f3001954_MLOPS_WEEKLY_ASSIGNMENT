@@ -21,3 +21,4 @@ gha-creds-*.json
 api/model.joblib
 mlruns/
 mlflow.db
+reports/week11/week11_model_config.env
