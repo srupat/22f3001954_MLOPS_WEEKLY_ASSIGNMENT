@@ -1,10 +1,5 @@
 pandas
-numpy<2.3
+numpy
 scikit-learn
-matplotlib
-joblib
-mlflow
+google-genai
 tabulate
-fairlearn
-shap
-scipy

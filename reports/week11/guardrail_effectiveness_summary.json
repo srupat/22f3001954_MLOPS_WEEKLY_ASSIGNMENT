@@ -1,0 +1,17 @@
+{
+    "injection_block_rate": 1.0,
+    "prompt_injection_unguarded_success_rate": 1.0,
+    "leakage_block_rate": 1.0,
+    "prompt_leakage_unguarded_success_rate": 0.3,
+    "false_positive_rate_on_legitimate_inputs": 0.0,
+    "accuracy_by_model": {
+        "v1": {
+            "guarded_accuracy": 0.9333333333333333,
+            "false_positive_rate": 0.0
+        },
+        "v2": {
+            "guarded_accuracy": 0.3333333333333333,
+            "false_positive_rate": 0.0
+        }
+    }
+}
